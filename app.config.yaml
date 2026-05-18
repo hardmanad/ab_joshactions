@@ -1,0 +1,45 @@
+# Standalone Runtime app — deploy with: aio app deploy
+# Web URLs: https://<namespace>/api/v1/web/joshactions-pkg/<actionName>
+application:
+  actions: actions
+  runtimeManifest:
+    packages:
+      joshactions-pkg:
+        license: Apache-2.0
+        actions:
+          hello:
+            function: actions/hello/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            annotations:
+              require-adobe-auth: false
+          presignedUrl:
+            function: actions/presignedUrl/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            annotations:
+              require-adobe-auth: true
+          deleteFile:
+            function: actions/deleteFile/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            annotations:
+              require-adobe-auth: true
+          listFiles:
+            function: actions/listFiles/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            annotations:
+              require-adobe-auth: true
+          getFileProperties:
+            function: actions/getFileProperties/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            annotations:
+              require-adobe-auth: true
+          getAEMPresignedUrl:
+            function: actions/getAEMPresignedUrl/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            annotations:
+              require-adobe-auth: true

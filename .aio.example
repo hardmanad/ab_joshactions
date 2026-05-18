@@ -1,0 +1,38 @@
+{
+  "project": {
+    "id": "YOUR_PROJECT_ID",
+    "name": "YOUR_PROJECT_NAME",
+    "title": "Your Project Title",
+    "org": {
+      "id": "YOUR_ORG_NUMERIC_ID",
+      "name": "Your Org Name",
+      "ims_org_id": "YOUR_IMS_ORG_ID@AdobeOrg"
+    },
+    "workspace": {
+      "id": "YOUR_WORKSPACE_ID",
+      "name": "Stage",
+      "title": "Stage",
+      "action_url": "https://YOUR_NAMESPACE.adobeioruntime.net",
+      "app_url": "https://YOUR_NAMESPACE.adobeio-static.net",
+      "details": {
+        "credentials": [
+          {
+            "id": "YOUR_CREDENTIAL_ID",
+            "name": "YOUR_CREDENTIAL_NAME",
+            "integration_type": "oauth_server_to_server"
+          }
+        ],
+        "services": [
+          {
+            "code": "Workfront API",
+            "name": "Adobe Workfront"
+          }
+        ],
+        "events": {
+          "registrations": []
+        },
+        "mesh": {}
+      }
+    }
+  }
+}

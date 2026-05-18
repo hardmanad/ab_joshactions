@@ -1,0 +1,13 @@
+{
+  "name": "joshactions",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Adobe App Builder — Runtime web actions",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "dependencies": {
+    "@adobe/aio-sdk": "^6.0.0",
+    "uuid": "^13.0.0"
+  }
+}
