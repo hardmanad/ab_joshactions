@@ -181,6 +181,34 @@ Proxies to the AEM `block_download` API and returns a presigned download URL for
 
 ---
 
+### `frameHmacVerify`
+Validates a Frame.io custom action HMAC-SHA256 signature. Useful for testing and debugging webhook signature verification independently of any action that receives Frame.io webhooks.
+
+**Auth:** None required.
+
+**URL:** `POST /api/v1/web/joshactions-pkg/frameHmacVerify`
+
+**Params:**
+
+| Param | Required | Description |
+|---|---|---|
+| `signature` | Yes | The `x-frameio-signature` header value from the Frame.io request |
+| `secret` | Yes | Your Frame.io custom action signing secret |
+| `timestamp` | No | The `x-frameio-request-timestamp` header value (used in the HMAC message) |
+| `body` | No | The raw request body as a plain string |
+| `bodyBase64` | No | The raw request body as a base64-encoded string (takes precedence over `body`) |
+
+**Response:**
+```json
+{ "valid": true }
+```
+or
+```json
+{ "valid": false }
+```
+
+---
+
 ### `frameSendToAEM`
 Handles a [Frame.io custom action](https://next.developer.frame.io/platform/v2/index) webhook and uploads the selected asset(s) to AEM Assets.
 
