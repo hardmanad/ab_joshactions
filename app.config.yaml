@@ -43,3 +43,17 @@ application:
             runtime: nodejs:18
             annotations:
               require-adobe-auth: true
+          frameSendToAEM:
+            function: actions/frameSendToAEM/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            annotations:
+              require-adobe-auth: false
+              raw-http: true
+            limits:
+              timeout: 120000
+            inputs:
+              LOG_LEVEL: info
+              FRAMEIO_SECRET: $FRAMEIO_SECRET
+              IMS_CLIENT_ID: $IMS_CLIENT_ID
+              IMS_CLIENT_SECRET: $IMS_CLIENT_SECRET
