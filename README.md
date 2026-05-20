@@ -58,30 +58,114 @@ Simple health-check action. No authentication required.
 ---
 
 ### `presignedUrl`
-Generates a presigned URL for a file in Adobe I/O Files storage and stores metadata in Adobe I/O State.
+Generates a presigned URL for uploading or downloading a file in Adobe I/O Files storage. Also creates an entry in Adobe I/O State that stores the presigned URL metadata for up to 4 days, keyed by a generated UUID (`cscUtilKey`). Files are stored at the path `{cscUtilKey}/{fileName}`.
 
 **Auth:** Adobe IMS Bearer token required.
+
+**Params:**
+
+| Param | Required | Default | Description |
+|---|---|---|---|
+| `fileName` | Yes | — | Name of the file (min 2 characters) |
+| `expiryInSeconds` | No | `7200` (2 hrs) | How long the presigned URL remains valid |
+| `permissions` | No | `rw` | Permissions for the URL (`r`, `w`, or `rw`) |
+
+**Response:**
+```json
+{
+  "fileName": "myfile.psd",
+  "cscUtilKey": "<uuid>",
+  "expiryInSeconds": 7200,
+  "permissions": "rw",
+  "presignedUrl": "https://...",
+  "uploadPath": "<uuid>/myfile.psd"
+}
+```
 
 ---
 
 ### `deleteFile`
-Deletes a file from Adobe I/O Files storage.
+Deletes a file from Adobe I/O Files storage at the given path.
 
 **Auth:** Adobe IMS Bearer token required.
+
+**Params:**
+
+| Param | Required | Description |
+|---|---|---|
+| `path` | Yes | Storage path in the format `<uuid>/<fileName>` (e.g. the `uploadPath` returned by `presignedUrl`) |
+
+**Response:**
+```json
+{ "ok": true, "path": "<uuid>/myfile.psd", "deleted": [...] }
+```
 
 ---
 
 ### `listFiles`
-Lists files in Adobe I/O Files storage.
+Lists all files currently in this app's Adobe I/O Files storage (both private and public roots).
 
 **Auth:** Adobe IMS Bearer token required.
+
+**Params:** None.
+
+**Response:**
+```json
+{
+  "ok": true,
+  "count": 3,
+  "files": [
+    {
+      "path": "<uuid>/myfile.psd",
+      "name": "myfile.psd",
+      "size": 204800,
+      "contentType": "image/vnd.adobe.photoshop",
+      "creationTime": "2026-01-01T00:00:00.000Z",
+      "lastModified": "2026-01-01T00:00:00.000Z",
+      "etag": "\"abc123\"",
+      "isDirectory": false,
+      "isPublic": false,
+      "url": "https://...",
+      "internalUrl": "https://..."
+    }
+  ]
+}
+```
 
 ---
 
 ### `getFileProperties`
-Returns metadata for a file in Adobe I/O Files storage.
+Returns properties for a single file in Adobe I/O Files storage.
 
 **Auth:** Adobe IMS Bearer token required.
+
+**Params:**
+
+| Param | Required | Description |
+|---|---|---|
+| `path` | Yes | Storage path in the format `<uuid>/<fileName>` |
+
+**Response:**
+```json
+{
+  "ok": true,
+  "file": {
+    "path": "<uuid>/myfile.psd",
+    "name": "myfile.psd",
+    "size": 204800,
+    "contentType": "image/vnd.adobe.photoshop",
+    "creationTime": "2026-01-01T00:00:00.000Z",
+    "lastModified": "2026-01-01T00:00:00.000Z",
+    "etag": "\"abc123\"",
+    "isDirectory": false,
+    "isPublic": false,
+    "url": "https://...",
+    "internalUrl": "https://..."
+  }
+}
+```
+
+Returns `404` if the file does not exist, `400` if the path points to a directory.
 
 ---
 
