@@ -43,6 +43,12 @@ application:
             runtime: nodejs:18
             annotations:
               require-adobe-auth: true
+          frameHmacVerify:
+            function: actions/frameHmacVerify/index.js
+            web: 'yes'
+            runtime: nodejs:18
+            annotations:
+              require-adobe-auth: false
           frameSendToAEM:
             function: actions/frameSendToAEM/index.js
             web: 'yes'

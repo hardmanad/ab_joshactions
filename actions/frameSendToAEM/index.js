@@ -3,7 +3,6 @@
 */
 
 const { Core } = require('@adobe/aio-sdk')
-const crypto = require('crypto')
 const { errorResponse } = require('../utils')
 
 const SIGNATURE_TOLERANCE_SECONDS = 500
@@ -11,6 +10,8 @@ const IMS_TOKEN_URL = 'https://ims-na1.adobelogin.com/ims/token/v3'
 const FRAMEIO_API_BASE = 'https://api.frame.io/v4'
 const FRAMEIO_SCOPES = 'openid,AdobeID,frame.s2s.all'
 const AEM_SCOPES = 'openid,AdobeID,read_organizations,additional_info.projectedProductContext'
+
+const FRAME_HMAC_VERIFY_URL = 'https://27200-joshactions-stage.adobeioruntime.net/api/v1/web/joshactions-pkg/frameHmacVerify'
 
 const FORM_RESPONSE = {
   title: 'Upload to AEM Assets',
@@ -36,14 +37,17 @@ const FORM_RESPONSE = {
   ]
 }
 
-function verifySignature (secret, timestamp, rawBody, signature) {
-  const message = `v0:${timestamp}:${rawBody}`
-  const expected = 'v0=' + crypto.createHmac('sha256', secret).update(message).digest('hex')
-  try {
-    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
-  } catch {
-    return false
+async function remoteVerifySignature (secret, timestamp, bodyBase64, signature) {
+  const res = await fetch(FRAME_HMAC_VERIFY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret, timestamp, bodyBase64, signature })
+  })
+  if (!res.ok) {
+    throw new Error(`frameHmacVerify request failed (${res.status})`)
   }
+  const data = await res.json()
+  return data.valid === true
 }
 
 async function getImsToken (clientId, clientSecret, scopes) {
@@ -347,14 +351,15 @@ async function main (params) {
       return errorResponse(500, 'server configuration error', logger)
     }
 
-    const rawBody = params.__ow_body
-      ? Buffer.from(params.__ow_body, 'base64').toString('utf8')
-      : ''
-
-    if (!verifySignature(secret, timestamp, rawBody, signature)) {
+    const valid = await remoteVerifySignature(secret, timestamp, params.__ow_body || '', signature)
+    if (!valid) {
       logger.info('rejected request with invalid signature')
       return errorResponse(401, 'invalid signature', logger)
     }
+
+    const rawBody = params.__ow_body
+      ? Buffer.from(params.__ow_body, 'base64').toString('utf8')
+      : ''
 
     let body
     try {
